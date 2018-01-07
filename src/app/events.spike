@@ -1,0 +1,12 @@
+package app;
+
+import Log from spike.core.Log;
+import EventsInterface from spike.core.EventsInterface;
+
+class Events extends EventsInterface {
+
+    onRender: function(){
+        Log.log('App onRender event');
+    }
+
+}

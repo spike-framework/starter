@@ -1,0 +1,14 @@
+package app.controller.home;
+
+import Controller from spike.core.Controller;
+import Log from spike.core.Log;
+
+class Home extends Controller {
+
+    init: function () {
+
+       Log.log('Controller Home initialized');
+
+    }
+
+}

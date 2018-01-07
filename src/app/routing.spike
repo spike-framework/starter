@@ -1,0 +1,13 @@
+package app;
+
+import RoutingInterface from spike.core.RoutingInterface;
+
+class Routing extends RoutingInterface {
+
+    create: function(router){
+
+        router.path('/', { controller: 'app.controller.home.Home' });
+
+    }
+
+}

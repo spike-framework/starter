@@ -1,0 +1,15 @@
+/.idea
+/.sass-cache
+/node_modules
+/bower_components
+/dist/libs/spike-compiler
+/dist/css/style.scss
+/dist/css/style.css
+/dist/libs/jquery/bower.json
+/dist/libs/jquery/README.md
+/dist/libs/jquery/external
+/dist/libs/jquery/src
+/dist/libs/spike-framework-core/src
+/dist/libs/spike-framework-core/bower.json
+/dist/libs/spike-framework-core/gruntfile.js
+/dist/libs/spike-framework-core/package.json

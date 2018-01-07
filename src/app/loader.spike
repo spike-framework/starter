@@ -1,0 +1,34 @@
+package app;
+
+import System from spike.core.System;
+import Message from spike.core.Message;
+import Rest from spike.core.Rest;
+import Log from spike.core.Log;
+import Broadcaster from spike.core.Broadcaster;
+import LoaderInterface from spike.core.LoaderInterface;
+
+import Config from app.Config;
+import Routing from app.Routing;
+import Events from app.Events;
+
+class Loader extends LoaderInterface {
+
+    loadApplication: function(){
+
+        System.setConfig(new Config());
+        System.setRouting(new Routing());
+        System.setEventsInterface(new Events());
+
+        Message.add("en", "i18/en.json").then(function(){
+            Log.log('Language EN loaded');
+        });
+
+        Rest.interceptor("Request", function(response, promise){
+            Log.log('invoke Request interceptor');
+        });
+
+        Broadcaster.register('SomeEvent');
+
+    }
+
+}
