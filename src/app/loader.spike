@@ -19,6 +19,8 @@ class Loader extends LoaderInterface {
         System.setRouting(new Routing());
         System.setEventsInterface(new Events());
 
+        Log.log('Load application done');
+
         Message.add("en", "i18/en.json").then(function(){
             Log.log('Language EN loaded');
         });
