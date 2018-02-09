@@ -134,7 +134,7 @@ module.exports = function (grunt) {
                 command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
             },
             templates: {
-                command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar templates  src/app dist/js/templates.js'
+                command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
             }
         },
 

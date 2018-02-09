@@ -1,0 +1,1 @@
+Watchers.watchers['src_app_controller_home_home_html']=function(scope, watcher){var t='';t+='<div class="homeController">';t+='</div>'; return t;}

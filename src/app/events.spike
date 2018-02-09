@@ -6,6 +6,7 @@ import EventsInterface from spike.core.EventsInterface;
 class Events extends EventsInterface {
 
     onRender: function(){
+
         Log.log('App onRender event');
     }
 
