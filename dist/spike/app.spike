@@ -86,7 +86,6 @@ class Home extends Controller {
     Home: function () {
 
        Log.log('Controller Home initialized');
-
        this.model.customerName = 'Mateusz M.';
        this.model.amount = 8000;
        this.model.type = 'PAYOUT';
