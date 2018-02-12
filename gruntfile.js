@@ -62,7 +62,7 @@ module.exports = function (grunt) {
         concat: {
 
             options: {
-                separator: '',
+                separator: ''
             },
 
             spike: {
@@ -131,12 +131,12 @@ module.exports = function (grunt) {
 
         shell: {
             transpile: {
-               // command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
-                command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
+                command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
+            //    command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
             },
             templates: {
-                //command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
-                command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
+                command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
+               // command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
             }
         },
 

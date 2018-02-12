@@ -5,6 +5,7 @@ import SpikeConfig from spike.core.Config;
 class Config extends SpikeConfig {
 
 
+    languageFilePath: "i18/{lang}.json"
 
 }package app;
 
@@ -41,12 +42,8 @@ class Loader extends LoaderInterface {
 
         Log.log('Load application done');
 
-        Message.add("en", "i18/en.json").then(function(){
-            Log.log('Language EN loaded');
-        });
-
         Rest.interceptor("Request", function(response, promise){
-            Log.log('invoke Request interceptor');
+            Log.log('Invoke Request interceptor');
         });
 
         Broadcaster.register('SomeEvent');
@@ -61,9 +58,7 @@ import RoutingInterface from spike.core.RoutingInterface;
 class Routing extends RoutingInterface {
 
     create: function(router){
-
         router.path('/', { controller: 'app.controller.home.Home' });
-
     }
 
 }package app.controller.home;
@@ -86,7 +81,9 @@ class Home extends Controller {
     Home: function () {
 
        Log.log('Controller Home initialized');
-       this.model.customerName = 'Mateusz M.';
+       console.log(this);
+
+       this.model.customerName = 'Mateusz';
        this.model.amount = 8000;
        this.model.type = 'PAYOUT';
        this.model.accountName = 'mKonto';

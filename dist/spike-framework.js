@@ -20,302 +20,302 @@
     });
 
 })(window.history);var spike = {
-    core: {}
+  core: {}
 };
 
 spike.core.Assembler = {
 
-    sourcePath: '',
-
-    constructorsMap: {},
-    constructorsFunctions: {},
-
-    templatesLoaded: false,
-    appLoaded: false,
-
-    totalNamespaces: 0,
-    namespacesCount: 0,
-
-    staticClasses: {},
-    objectiveClasses: {},
-
-    dependenciesFn: null,
-    spikeLoading: false,
-
-
-    // setConstructorsMap: function (constructorsMap) {
-    //     this.constructorsMap = constructorsMap;
-    //     this.checkIfCanBootstrap();
-    // },
-
-    // appendConstructorsFunctions: function (constructorsFunctions) {
-    //
-    //     for(var constructorFullName in constructorsFunctions){
-    //         this.constructorsFunctions[constructorFullName] = constructorsFunctions[constructorFullName];
-    //     }
-    //
-    // },
-    //
-    // getConstructorFunction: function(constructorFullName){
-    //     return new this.constructorsFunctions[constructorFullName]();
-    // },
-
-    resetNamespaces: function (namespacesCount, package) {
-        this.totalNamespaces = namespacesCount;
-        this.namespacesCount = 0;
-        this.dependenciesFn = null;
-        this.spikeLoading = false;
-
-        if (package === 'spike.core') {
-            this.spikeLoading = true;
-        } else {
-            this.staticClasses = {};
-            this.objectiveClasses = {};
-        }
-
-    },
-
-
-    /**
-     var newObjectShallow = extend(object1, object2, object3);
-     var newObjectDeep = extend(true, object1, object2, object3);
-
-
-     UWAGA!!!! TRZEBA WYKLUCZYC FUNKCJE O NAZWACH getSuper i getClass BO SIE NADPISZA
-     ZROBIONE
-     SPRAWDZIC W TESTACH
-
-     */
-    extend: function (from, to) {
-
-        if (to !== null && to !== undefined) {
-
-            var overrides = {};
-
-            for (var prop in from) {
-
-                if (from.hasOwnProperty(prop)) {
-
-                    if (to[prop] !== undefined) {
-                        overrides[prop] = to[prop];
-                    }else{
-                        to[prop] = from[prop];
-                    }
-
-                }
-
-            }
-
-            for(var prop in overrides){
-                to[prop] = overrides[prop];
-            }
-
-        }
-
-    },
-
-    dependencies: function (dependenciesFn) {
-        this.dependenciesFn = dependenciesFn;
-        this.checkIfCanBootstrap();
-    },
-
-    getDotPath: function (package) {
-
-        var obj = window;
-
-        package = package.split(".");
-        for (var i = 0, l = package.length; i < l; i++) {
-
-            if (obj[package[i]] === undefined) {
-                break;
-            }
-
-            obj = obj[package[i]];
-
-        }
-
-        return obj;
-
-    },
-
-    createDotPath: function (package, fillObject) {
-
-        if (package.trim().length === 0) {
-            throw new Error();
-        }
-
-        //  package = package.substring(4, package.length);
-
-
-        var createNodesFnBody = '';
-        var splitPackage = package.split('.');
-
-        var packageCheck = 'window';
-        for (var i = 0, l = splitPackage.length; i < l; i++) {
-
-            packageCheck += '.' + splitPackage[i];
-
-            createNodesFnBody += 'if(' + packageCheck + ' === undefined){';
-            createNodesFnBody += '    ' + packageCheck + ' = {};';
-            createNodesFnBody += '}';
-
-        }
-
-        createNodesFnBody += '    ' + packageCheck + ' = fillObject';
-
-        Function('fillObject', createNodesFnBody)(fillObject);
-
-    },
-
-    defineNamespace: function (classFullName, namespaceCreator) {
-
-        this.namespacesCount++;
-        this.createDotPath(classFullName, null);
-
-        this.objectiveClasses[classFullName] = namespaceCreator;
-
-    },
-
-    createStaticClass: function (package, name, inherits, classBody) {
-
-        if (name.indexOf(package) > -1) {
-            name = name.replace(package + '.', '');
-        }
-
-        this.namespacesCount++;
-        this.createDotPath(package + '.' + name, null);
-
-        this.staticClasses[package + '.' + name] = classBody;
-
-    },
-
-
-    checkIfCanBootstrap: function () {
-
-        console.log('this.spikeLoading  : ' + this.spikeLoading);
-        console.log('this.namespacesCount : '+this.namespacesCount);
-        console.log('this.totalNamespaces : '+this.totalNamespaces);
-
-        if (this.namespacesCount === this.totalNamespaces && this.dependenciesFn) {
-            this.bootstrap();
-
-            if (this.appLoaded === true && this.spikeLoading === false) {
-                spike.core.System.init();
-            }
-
-        }
-
-    },
-
-    bootstrap: function () {
-
-        for (var className in this.staticClasses) {
-            this.createDotPath(className, this.staticClasses[className]);
-        }
-
-        for (var className in this.objectiveClasses) {
-            this.objectiveClasses[className]();
-        }
-
-        this.dependenciesFn();
-        this.loadTemplates();
-
-    },
-
-    loadTemplates: function () {
-
-        var self = this;
-
-        if (this.templatesLoaded === false) {
-
-            if (document.querySelector('[templates-src]') === null) {
-                throw new Error('Spike Framework: Cannot find script tag with templates-src definition')
-            }
-
-            if (document.querySelector('[app-src]') === null) {
-                throw new Error('Spike Framework: Cannot find script tag with app-src definition')
-            }
-
-            var script = document.createElement("script");
-            script.type = "application/javascript";
-            script.src = document.querySelector('[templates-src]').getAttribute('templates-src');
-            script.onload = function () {
-                self.templatesLoaded = true;
-
-                self.namespacesCount = 0;
-                self.appLoaded = true;
-                var script2 = document.createElement("script");
-                script2.type = "application/javascript";
-                script2.src = document.querySelector('[app-src]').getAttribute('app-src');
-                document.body.appendChild(script2);
-
-            };
-
-            document.body.appendChild(script);
-
-        }
-
-    },
-
-    findLoaderClass: function () {
-
-        for (var className in this.objectiveClasses) {
-
-            if (this.objectiveClasses.hasOwnProperty(className)) {
-
-                if (this.objectiveClasses[className].toString().indexOf('return \'spike.core.LoaderInterface\'') > -1) {
-
-                    var loader = window;
-
-                    var split = className.split('.');
-                    for (var i = 0; i < split.length; i++) {
-
-                        loader = loader[split[i]];
-
-                    }
-
-                    loader = new loader([]);
-                    return loader;
-
-                }
-
-            }
-
-        }
-
-        throw new Error('Spike Framework: No loader defined');
-
-    },
-
-    getClassByName: function (classFullName) {
-
-        function getObjectFromPath(path) {
-            var obj = window;
-
-            var split = path.split('.');
-            for (var i = 0; i < split.length; i++) {
-                obj = obj[split[i]];
-            }
-
-            return obj;
-        }
-
-        var packageName = classFullName.substring(0, classFullName.lastIndexOf('.'));
-        var className = classFullName.substring(classFullName.lastIndexOf('.')+1, classFullName.length);
-        var clazz = getObjectFromPath(packageName)[className];
-
-        return clazz;
-
-    },
-
-    getClassInstance: function (classFullName, argsArray) {
-        var clazz = this.getClassByName(classFullName);
-        return new clazz(argsArray);
+  sourcePath: '',
+
+  constructorsMap: {},
+  constructorsFunctions: {},
+
+  templatesLoaded: false,
+  appLoaded: false,
+
+  totalNamespaces: 0,
+  namespacesCount: 0,
+
+  staticClasses: {},
+  objectiveClasses: {},
+
+  dependenciesFn: null,
+  spikeLoading: false,
+
+
+  // setConstructorsMap: function (constructorsMap) {
+  //     this.constructorsMap = constructorsMap;
+  //     this.checkIfCanBootstrap();
+  // },
+
+  // appendConstructorsFunctions: function (constructorsFunctions) {
+  //
+  //     for(var constructorFullName in constructorsFunctions){
+  //         this.constructorsFunctions[constructorFullName] = constructorsFunctions[constructorFullName];
+  //     }
+  //
+  // },
+  //
+  // getConstructorFunction: function(constructorFullName){
+  //     return new this.constructorsFunctions[constructorFullName]();
+  // },
+
+  resetNamespaces: function (namespacesCount, package) {
+    this.totalNamespaces = namespacesCount;
+    this.namespacesCount = 0;
+    this.dependenciesFn = null;
+    this.spikeLoading = false;
+
+    if (package === 'spike.core') {
+      this.spikeLoading = true;
+    } else {
+      this.staticClasses = {};
+      this.objectiveClasses = {};
     }
+
+  },
+
+
+  /**
+   var newObjectShallow = extend(object1, object2, object3);
+   var newObjectDeep = extend(true, object1, object2, object3);
+
+
+   UWAGA!!!! TRZEBA WYKLUCZYC FUNKCJE O NAZWACH getSuper i getClass BO SIE NADPISZA
+   ZROBIONE
+   SPRAWDZIC W TESTACH
+
+   */
+  extend: function (from, to) {
+
+    if (to !== null && to !== undefined) {
+
+      var overrides = {};
+
+      for (var prop in from) {
+
+        if (from.hasOwnProperty(prop)) {
+
+          if (to[prop] !== undefined) {
+            overrides[prop] = to[prop];
+          } else {
+            to[prop] = from[prop];
+          }
+
+        }
+
+      }
+
+      for (var prop in overrides) {
+        to[prop] = overrides[prop];
+      }
+
+    }
+
+  },
+
+  dependencies: function (dependenciesFn) {
+    this.dependenciesFn = dependenciesFn;
+    this.checkIfCanBootstrap();
+  },
+
+  getDotPath: function (package) {
+
+    var obj = window;
+
+    package = package.split(".");
+    for (var i = 0, l = package.length; i < l; i++) {
+
+      if (obj[package[i]] === undefined) {
+        break;
+      }
+
+      obj = obj[package[i]];
+
+    }
+
+    return obj;
+
+  },
+
+  createDotPath: function (package, fillObject) {
+
+    if (package.trim().length === 0) {
+      throw new Error();
+    }
+
+    //  package = package.substring(4, package.length);
+
+
+    var createNodesFnBody = '';
+    var splitPackage = package.split('.');
+
+    var packageCheck = 'window';
+    for (var i = 0, l = splitPackage.length; i < l; i++) {
+
+      packageCheck += '.' + splitPackage[i];
+
+      createNodesFnBody += 'if(' + packageCheck + ' === undefined){';
+      createNodesFnBody += '    ' + packageCheck + ' = {};';
+      createNodesFnBody += '}';
+
+    }
+
+    createNodesFnBody += '    ' + packageCheck + ' = fillObject';
+
+    Function('fillObject', createNodesFnBody)(fillObject);
+
+  },
+
+  defineNamespace: function (classFullName, namespaceCreator) {
+
+    this.namespacesCount++;
+    this.createDotPath(classFullName, null);
+
+    this.objectiveClasses[classFullName] = namespaceCreator;
+
+  },
+
+  createStaticClass: function (package, name, inherits, classBody) {
+
+    if (name.indexOf(package) > -1) {
+      name = name.replace(package + '.', '');
+    }
+
+    this.namespacesCount++;
+    this.createDotPath(package + '.' + name, null);
+
+    this.staticClasses[package + '.' + name] = classBody;
+
+  },
+
+
+  checkIfCanBootstrap: function () {
+
+    console.log('this.spikeLoading  : ' + this.spikeLoading);
+    console.log('this.namespacesCount : ' + this.namespacesCount);
+    console.log('this.totalNamespaces : ' + this.totalNamespaces);
+
+    if (this.namespacesCount === this.totalNamespaces && this.dependenciesFn) {
+      this.bootstrap();
+
+      if (this.appLoaded === true && this.spikeLoading === false) {
+        spike.core.System.init();
+      }
+
+    }
+
+  },
+
+  bootstrap: function () {
+
+    for (var className in this.staticClasses) {
+      this.createDotPath(className, this.staticClasses[className]);
+    }
+
+    for (var className in this.objectiveClasses) {
+      this.objectiveClasses[className]();
+    }
+
+    this.dependenciesFn();
+    this.loadTemplates();
+
+  },
+
+  loadTemplates: function () {
+
+    var self = this;
+
+    if (this.templatesLoaded === false) {
+
+      if (document.querySelector('[templates-src]') === null) {
+        throw new Error('Spike Framework: Cannot find script tag with templates-src definition')
+      }
+
+      if (document.querySelector('[app-src]') === null) {
+        throw new Error('Spike Framework: Cannot find script tag with app-src definition')
+      }
+
+      var script = document.createElement("script");
+      script.type = "application/javascript";
+      script.src = document.querySelector('[templates-src]').getAttribute('templates-src');
+      script.onload = function () {
+        self.templatesLoaded = true;
+
+        self.namespacesCount = 0;
+        self.appLoaded = true;
+        var script2 = document.createElement("script");
+        script2.type = "application/javascript";
+        script2.src = document.querySelector('[app-src]').getAttribute('app-src');
+        document.body.appendChild(script2);
+
+      };
+
+      document.body.appendChild(script);
+
+    }
+
+  },
+
+  findLoaderClass: function () {
+
+    for (var className in this.objectiveClasses) {
+
+      if (this.objectiveClasses.hasOwnProperty(className)) {
+
+        if (this.objectiveClasses[className].toString().indexOf('return \'spike.core.LoaderInterface\'') > -1) {
+
+          var loader = window;
+
+          var split = className.split('.');
+          for (var i = 0; i < split.length; i++) {
+
+            loader = loader[split[i]];
+
+          }
+
+          loader = new loader([]);
+          return loader;
+
+        }
+
+      }
+
+    }
+
+    throw new Error('Spike Framework: No loader defined');
+
+  },
+
+  getClassByName: function (classFullName) {
+
+    function getObjectFromPath(path) {
+      var obj = window;
+
+      var split = path.split('.');
+      for (var i = 0; i < split.length; i++) {
+        obj = obj[split[i]];
+      }
+
+      return obj;
+    }
+
+    var packageName = classFullName.substring(0, classFullName.lastIndexOf('.'));
+    var className = classFullName.substring(classFullName.lastIndexOf('.') + 1, classFullName.length);
+    var clazz = getObjectFromPath(packageName)[className];
+
+    return clazz;
+
+  },
+
+  getClassInstance: function (classFullName, argsArray) {
+    var clazz = this.getClassByName(classFullName);
+    return new clazz(argsArray);
+  }
 
 };
 
-spike.core.Assembler.resetNamespaces(21, 'spike.core');spike.core.Assembler.defineNamespace('spike.core.Config',function(){spike.core.Config=function(args){if(this['constructor_'+args.length] !== undefined){this['constructor_'+args.length].apply(this, args);}else{throw new Error('Spike: No matching constructor found spike.core.Config with arguments count: '+args.length);}};spike.core.Config.prototype.constructor_0=function(){var $this=this;};spike.core.Config.prototype.html5Mode= false;spike.core.Config.prototype.mobileRun= false;spike.core.Config.prototype.showLog= true;spike.core.Config.prototype.showObj= true;spike.core.Config.prototype.showDebug= true;spike.core.Config.prototype.showWarn= true;spike.core.Config.prototype.showOk= true;spike.core.Config.prototype.mainController= null;spike.core.Config.prototype.initialView= null;spike.core.Config.prototype.rootPath= 'app';spike.core.Config.prototype.getSuper=function(){var $this=this; return 'null'; };spike.core.Config.prototype.getClass=function(){var $this=this; return 'spike.core.Config'; };});spike.core.Assembler.createStaticClass('spike.core','Errors', 'null',{messages: {
+spike.core.Assembler.resetNamespaces(21, 'spike.core');spike.core.Assembler.defineNamespace('spike.core.Config',function(){spike.core.Config=function(args){if(this['constructor_'+args.length] !== undefined){this['constructor_'+args.length].apply(this, args);}else{throw new Error('Spike: No matching constructor found spike.core.Config with arguments count: '+args.length);}};spike.core.Config.prototype.constructor_0=function(){var $this=this;};spike.core.Config.prototype.languageFilePath= "/{lang}.json";spike.core.Config.prototype.html5Mode= false;spike.core.Config.prototype.mobileRun= false;spike.core.Config.prototype.showLog= true;spike.core.Config.prototype.showObj= true;spike.core.Config.prototype.showDebug= true;spike.core.Config.prototype.showWarn= true;spike.core.Config.prototype.showOk= true;spike.core.Config.prototype.mainController= null;spike.core.Config.prototype.initialView= null;spike.core.Config.prototype.rootPath= 'app';spike.core.Config.prototype.getSuper=function(){var $this=this; return 'null'; };spike.core.Config.prototype.getClass=function(){var $this=this; return 'spike.core.Config'; };});spike.core.Assembler.createStaticClass('spike.core','Errors', 'null',{messages: {
 
 CACHED_PROMISE_DEPRECADES: '@createCachedPromise has been deprecated. Use @cache param instead',
 REST_API_NULL_PATHPARAM: 'REST endpoint has undefined or null path params: {0}',
@@ -417,7 +417,9 @@ element.removeAttribute('spike-unbinded');
 
 }
 
-},getSuper:function(){var $this=this; return 'null'; },getClass:function(){var $this=this; return 'spike.core.Events'; },});spike.core.Assembler.defineNamespace('spike.core.EventsInterface',function(){spike.core.EventsInterface=function(args){if(this['constructor_'+args.length] !== undefined){this['constructor_'+args.length].apply(this, args);}else{throw new Error('Spike: No matching constructor found spike.core.EventsInterface with arguments count: '+args.length);}};spike.core.EventsInterface.prototype.constructor_0=function(){var $this=this;};spike.core.EventsInterface.prototype.onRender=function(){var $this=this;
+},getSuper:function(){var $this=this; return 'null'; },getClass:function(){var $this=this; return 'spike.core.Events'; },});spike.core.Assembler.defineNamespace('spike.core.EventsInterface',function(){spike.core.EventsInterface=function(args){if(this['constructor_'+args.length] !== undefined){this['constructor_'+args.length].apply(this, args);}else{throw new Error('Spike: No matching constructor found spike.core.EventsInterface with arguments count: '+args.length);}};spike.core.EventsInterface.prototype.constructor_0=function(){var $this=this;};spike.core.EventsInterface.prototype.onIncompatible=function(){var $this=this;
+
+};spike.core.EventsInterface.prototype.onRender=function(){var $this=this;
 
 };spike.core.EventsInterface.prototype.domEvents=function(){var $this=this;
 
@@ -483,8 +485,8 @@ return endpoint.controller;
 return this.currentController || this.config.mainController;
 },execOnRenderEvent: function () {var $this=this;
 
-if (Events.onRender) {
-Events.onRender();
+if (this.eventsInterface.onRender) {
+this.eventsInterface.onRender();
 }
 
 },renderModal: function (modalObject, modalInitialData, afterRenderCallback) {var $this=this;
@@ -612,27 +614,28 @@ if(this.eventsInterface === null){
 this.setEventsInterface(new spike.core.EventsInterface([]));
 }
 
-spike.core.Router.detectHTML5Mode();
-
 spike.core.Log.warn('Spike version: {0}', [spike.core.System.version]);
 spike.core.Log.ok('Spike application initializing...');
 
-
 this.verifyViews();
+spike.core.Router.detectHTML5Mode();
+
+spike.core.Message.loadLanguage().then(function(){
+
 this.renderInitialView();
-this.routing.create(spike.core.Router.create());
-this.initGlobalElements();
 
 spike.core.Router.registerRouter();
+$this.initGlobalElements();
 
-
-if (this.getEvents().onReady !== undefined) {
-this.getEvents().onReady();
+if ($this.eventsInterface.onReady !== undefined) {
+$this.eventsInterface.onReady();
 }
 
-this.loader.onLoadApplication();
+$this.loader.onLoadApplication();
 
 spike.core.Log.ok('Spike application ready to work...');
+
+});
 
 },initGlobalElements: function(){var $this=this;
 
@@ -792,7 +795,7 @@ if(idList[i].indexOf('spike-href-') > -1){
 linksSelectors.push(newId);
 }
 
-templateHtml = templateHtml.replace('id="' + id + '"', 'id="' + newId + '"');
+templateHtml = templateHtml.replace('id="' + idList[i] + '"', 'id="' + newId + '"');
 
 }
 
@@ -835,7 +838,7 @@ return index === 0 ? match.toLowerCase() : match.toUpperCase();
 return JSON.parse(JSON.stringify(oldArray));
 },currentDateLog: function () {var $this=this;
 return new Date().toLocaleTimeString();
-},bindStringParams: function (string, objectOrArrayParams, noStringify) {var $this=this;
+},bindStringParams: function (string, objectOrArrayParams) {var $this=this;
 
 if (!string) {
 return '';
@@ -849,14 +852,15 @@ try {
 
 if (objectOrArrayParams instanceof Array) {
 
+
 for (var i = 0; i < objectOrArrayParams.length; i++) {
-string = string.replace('{' + i + '}', noStringify ? objectOrArrayParams[i] : JSON.stringify(objectOrArrayParams[i]))
+string = string.replace('{' + i + '}', objectOrArrayParams[i])
 }
 
 } else {
 
 for (var paramName in objectOrArrayParams) {
-string = string.replace('{' + paramName + '}', noStringify ? objectOrArrayParams[paramName] : JSON.stringify(objectOrArrayParams[paramName]));
+string = string.replace('{' + paramName + '}', objectOrArrayParams[paramName]);
 }
 
 }
@@ -1553,7 +1557,10 @@ cachePeriod: cache === true ? null : cache,
 data: null
 };
 
-},getSuper:function(){var $this=this; return 'null'; },getClass:function(){var $this=this; return 'spike.core.Rest'; },});spike.core.Assembler.createStaticClass('spike.core','spike.core.Message', 'null',{waitingForTranslations: {},messages: {},add: function (languageName, languageFilePath) {var $this=this;
+},getSuper:function(){var $this=this; return 'null'; },getClass:function(){var $this=this; return 'spike.core.Rest'; },});spike.core.Assembler.createStaticClass('spike.core','spike.core.Message', 'null',{waitingForTranslations: {},messages: {},loadLanguage: function(){var $this=this;
+console.log(spike.core.System.config);
+return spike.core.Message.add(spike.core.System.config.lang, spike.core.Util.bindStringParams(spike.core.System.config.languageFilePath, { lang: spike.core.System.config.lang }));
+},add: function (languageName, languageFilePath) {var $this=this;
 
 spike.core.Log.log('register translation {0}', [languageName]);
 
@@ -1567,6 +1574,10 @@ type: 'GET'
 promise.then(function (data) {
 
 spike.core.Message.setTranslation(languageName, data);
+
+spike.core.Log.log('languageName : '+languageName);
+spike.core.Log.log('spike.core.System.config.lang  : '+spike.core.System.config.lang);
+
 return data;
 
 });
@@ -1577,7 +1588,7 @@ if (error.status === 200) {
 spike.core.Message.setTranslation(languageName, error.responseText);
 } else {
 spike.core.Message.messages[languageName] = {};
-Errors.throwWarn(Errors.messages.TRANSLATION_LOAD_WARN, [languageName, error.status]);
+spike.core.Errors.throwWarn(spike.core.Errors.messages.TRANSLATION_LOAD_WARN, [languageName, error.status]);
 }
 
 return error;
@@ -1593,7 +1604,7 @@ if (typeof translationData === 'string') {
 try {
 translationData = JSON.parse(translationData);
 } catch (err) {
-Errors.throwError(Errors.messages.TRANSLATION_PARSING, [languageName]);
+spike.core.Errors.throwError(spike.core.Errors.messages.TRANSLATION_PARSING, [languageName]);
 }
 
 }
@@ -1602,9 +1613,9 @@ spike.core.Message.messages[languageName] = translationData;
 spike.core.Message.waitingForTranslations[languageName] = true;
 },get: function (messageName, arrayOrMapParams) {var $this=this;
 
-var message = this.messages[Config.lang][messageName];
+var message = this.messages[spike.core.System.config.lang][messageName];
 if(!message){
-Errors.throwWarn(Errors.messages.TRANSLATION_MESSAGE_NOT_FOUND, [messageName])
+spike.core.Errors.throwWarn(spike.core.Errors.messages.TRANSLATION_MESSAGE_NOT_FOUND, [messageName])
 }
 
 if(arrayOrMapParams && message){
@@ -1614,13 +1625,11 @@ message = spike.core.Util.bindTranslationParams(message, arrayOrMapParams);
 return message || messageName;
 },getSuper:function(){var $this=this; return 'null'; },getClass:function(){var $this=this; return 'spike.core.Message'; },});spike.core.Assembler.createStaticClass('spike.core','Templates', 'null',{templates: {},compileTemplate: function(scope, name){var $this=this;
 return this.templates[spike.core.Assembler.sourcePath+"_"+name](scope);
-},getSuper:function(){var $this=this; return 'null'; },getClass:function(){var $this=this; return 'spike.core.Templates'; },});spike.core.Assembler.createStaticClass('spike.core','spike.core.Router', 'null',{preventReloadPage: null,events: {},otherwiseReplacement: '!',pathParamReplacement: 'var',endpoints: {},routerHTML5Mode: false,pathFunctionHandler: null,getCurrentViewCache: null,getCurrentViewRouteCache: null,getCurrentViewDataCache: null,getCurrentViewDataRouteCache: null,redirectToViewHandler: null,createLinkHandler: null,getRouterFactory: function () {var $this=this;
+},getSuper:function(){var $this=this; return 'null'; },getClass:function(){var $this=this; return 'spike.core.Templates'; },});spike.core.Assembler.createStaticClass('spike.core','spike.core.Router', 'null',{preventReloadPage: null,events: {},otherwiseReplacement: '!',pathParamReplacement: 'var',endpoints: {},routerHTML5Mode: false,pathFunctionHandler: null,hashChangeInterval: null,lastHashValue: null,getCurrentViewCache: null,getCurrentViewRouteCache: null,getCurrentViewDataCache: null,getCurrentViewDataRouteCache: null,redirectToViewHandler: null,createLinkHandler: null,getRouterFactory: function () {var $this=this;
 return {
 path: spike.core.Router.pathFunction,
 other: spike.core.Router.otherFunction
 }
-},create: function () {var $this=this;
-return spike.core.Router.getRouterFactory();
 },otherFunction: function (pathObject) {var $this=this;
 return spike.core.Router.pathFunction(spike.core.Router.otherwiseReplacement, pathObject);
 },pathFunction: function (pathValue, pathObject) {var $this=this;
@@ -1727,6 +1736,8 @@ return pathPattern;
 
 if (window.history && window.history.pushState && spike.core.System.config.html5Mode === true) {
 spike.core.Router.routerHTML5Mode = true;
+}else{
+spike.core.System.eventsInterface.onIncompatible('HISTORY_API');
 }
 
 },registerRouter: function () {var $this=this;
@@ -1737,6 +1748,8 @@ if (spike.core.Util.isEmpty(spike.core.System.routing)) {
 spike.core.Errors.throwError(spike.core.Errors.messages.ROUTING_ENABLED_NOT_DEFINED, []);
 }
 
+spike.core.System.routing.create(spike.core.Router.getRouterFactory());
+
 if (spike.core.Router.routerHTML5Mode === false && window.location.hash.substring(0, 2) !== '#/') {
 window.location.hash = '#/';
 }
@@ -1744,22 +1757,38 @@ window.location.hash = '#/';
 spike.core.Router.renderCurrentView();
 
 if (spike.core.Router.routerHTML5Mode === false) {
-$(window).bind('hashchange', spike.core.Router.onHashChanges);
+this.initHashChangeEvent();
 }
 
-},onHashChanges: function (e) {var $this=this;
+},initHashChangeEvent: function(){var $this=this;
+
+function hashChangeCallback(){
+
+spike.core.Log.log('spike.core.Router.lastHashValue : '+spike.core.Router.lastHashValue);
+spike.core.Log.log('window.location.hash : '+window.location.hash);
+
+if(spike.core.Router.lastHashValue !== window.location.hash){
+spike.core.Router.lastHashValue = window.location.hash;
+spike.core.Router.onHashChanges();
+}
+
+}
+
+spike.core.Router.hashChangeInterval = setInterval(hashChangeCallback, 100);
+
+},onHashChanges: function () {var $this=this;
 
 spike.core.Log.debug('Executes spike.core.Router.onHashChanges');
 
 if (window.location.hash.replace('#', '') === spike.core.Router.preventReloadPage) {
 spike.core.Router.preventReloadPage = null;
-spike.core.Router.fireRouteEvents(e);
+spike.core.Router.fireRouteEvents();
 return false;
 }
 
 spike.core.Router.clearCacheViewData();
 
-spike.core.Router.fireRouteEvents(e);
+spike.core.Router.fireRouteEvents();
 spike.core.Router.renderCurrentView();
 
 },onHistoryChanges: function () {var $this=this;
@@ -1770,28 +1799,28 @@ spike.core.Log.debug('Executes spike.core.Router.onHistoryChanges');
 
 if (spike.core.Router.getPathName() === spike.core.Router.preventReloadPage) {
 spike.core.Router.preventReloadPage = null;
-spike.core.Router.fireRouteEvents({});
+spike.core.Router.fireRouteEvents();
 return false;
 }
 
 spike.core.Router.clearCacheViewData();
 
-spike.core.Router.fireRouteEvents({});
+spike.core.Router.fireRouteEvents();
 spike.core.Router.renderCurrentView();
 
 }
 
-},fireRouteEvents: function (e) {var $this=this;
+},fireRouteEvents: function () {var $this=this;
 
 var currentRoute = spike.core.Router.getCurrentRoute();
 
-$.each(spike.core.Router.events, function (eventName, eventFunction) {
+for(var eventName in spike.core.Router.events){
 
-if (eventFunction) {
-eventFunction(e, currentRoute, app.currentController);
+if (spike.core.Router.events[eventName]) {
+spike.core.Router.events[eventName](currentRoute, app.currentController);
 }
 
-});
+}
 
 },onRouteChange: function (eventName, eventFunction) {var $this=this;
 
@@ -2075,7 +2104,6 @@ spike.core.Log.debug('rendering controller & modal, default controller: ' + curr
 spike.core.System.render(currentEndpointData.defaultController, currentEndpointData, currentEndpointData.onRouteEventWithModal);
 } else {
 spike.core.System.render(currentEndpointData.modal, currentEndpointData, currentEndpointData.onRouteEvent);
-spike.core.Router.refreshCurrentHyperlinkCache();
 }
 
 } else {
@@ -2083,26 +2111,6 @@ spike.core.System.render(currentEndpointData.controller, currentEndpointData, cu
 }
 
 app.previousController = currentEndpointData.controller;
-
-},refreshCurrentHyperlinkCache: function () {var $this=this;
-
-var currentEndpoint = spike.core.Router.getCurrentViewData();
-
-var timestamp = new Date().getTime();
-
-$('a[href*="' + spike.core.Router.getPathValueWithoutParams(currentEndpoint.endpoint.pathValue) + '"]').each(function () {
-
-var hyperLinkUrl = $(this).attr('href');
-
-if (hyperLinkUrl.indexOf('?') > -1) {
-hyperLinkUrl += '&t=' + timestamp;
-} else {
-hyperLinkUrl += '?t=' + timestamp;
-}
-
-$(this).attr('href', hyperLinkUrl);
-
-});
 
 },getPathValueWithoutParams: function (pathValue) {var $this=this;
 
@@ -2213,9 +2221,7 @@ spike.core.Router.redirect(link);
 
 }
 
-},getSuper:function(){var $this=this; return 'null'; },getClass:function(){var $this=this; return 'spike.core.Router'; },});spike.core.Assembler.defineNamespace('spike.core.Element',function(){spike.core.Element=function(args){if(this['constructor_'+args.length] !== undefined){this['constructor_'+args.length].apply(this, args);}else{throw new Error('Spike: No matching constructor found spike.core.Element with arguments count: '+args.length);}};spike.core.Element.prototype.constructor_0=function(){var $this=this;
-console.log(this);
-};spike.core.Element.prototype.constructor_2=function(parentElement,model){var $this=this;
+},getSuper:function(){var $this=this; return 'null'; },getClass:function(){var $this=this; return 'spike.core.Router'; },});spike.core.Assembler.defineNamespace('spike.core.Element',function(){spike.core.Element=function(args){if(this['constructor_'+args.length] !== undefined){this['constructor_'+args.length].apply(this, args);}else{throw new Error('Spike: No matching constructor found spike.core.Element with arguments count: '+args.length);}};spike.core.Element.prototype.constructor_2=function(parentElement,model){var $this=this;
 
 this.parentElement = parentElement;
 this.model = model;
@@ -2225,13 +2231,13 @@ this.createTemplate();
 
 
 
-};spike.core.Element.prototype.rendered= false;spike.core.Element.prototype.model= null;spike.core.Element.prototype.elementId= null;spike.core.Element.prototype.elementSelector= null;spike.core.Element.prototype.compiledHtml= null;spike.core.Element.prototype.parentElement= null;spike.core.Element.prototype.childElements= [];spike.core.Element.prototype.selector= {};spike.core.Element.prototype.eventsSelectors= [];spike.core.Element.prototype.linksSelectors= [];spike.core.Element.prototype.rootSelector=function(){var $this=this;
+};spike.core.Element.prototype.constructor_0=function(){var $this=this;};spike.core.Element.prototype.rendered= false;spike.core.Element.prototype.model= null;spike.core.Element.prototype.elementId= null;spike.core.Element.prototype.elementSelector= null;spike.core.Element.prototype.compiledHtml= null;spike.core.Element.prototype.parentElement= null;spike.core.Element.prototype.childElements= [];spike.core.Element.prototype.selector= {};spike.core.Element.prototype.eventsSelectors= [];spike.core.Element.prototype.linksSelectors= [];spike.core.Element.prototype.rootSelector=function(){var $this=this;
 
 if(this.elementSelector === null){
 this.elementSelector = document.getElementById(this.elementId);
 }
 
-return document.getElementById(this.elementId);
+return this.elementSelector;
 };spike.core.Element.prototype.include=function(childElement){var $this=this;
 
 this.childElements.push(childElement);
@@ -2265,16 +2271,17 @@ this.selector = selectorsObj.selectors;
 this.eventsSelectors = selectorsObj.eventsSelectors;
 this.linksSelectors = selectorsObj.linksSelectors;
 
-
 };spike.core.Element.prototype.render=function(){var $this=this;
 };spike.core.Element.prototype.reloadComponent=function(component, componentData){var $this=this;
+
 };spike.core.Element.prototype.replaceWith=function(){var $this=this;
 
 var elementDiv = document.createElement("div");
 elementDiv.innerHTML = this.compiledHtml;
 elementDiv.setAttribute('element-name', this.getClass());
 elementDiv.setAttribute('id', this.elementId);
-this.rootSelector().parentNode.replaceChild(elementDiv, this.rootSelector());
+
+this.rootSelector().replaceChild(elementDiv, this.rootSelector());
 
 this.elementSelector = null;
 
@@ -2297,36 +2304,22 @@ if(this.init !== undefined){
 this.init();
 }
 
-};spike.core.GlobalElement.prototype.getSuper=function(){var $this=this; return 'spike.core.Element'; };spike.core.GlobalElement.prototype.getClass=function(){var $this=this; return 'spike.core.GlobalElement'; };});spike.core.Assembler.defineNamespace('spike.core.Controller',function(){spike.core.Controller=function(args){if(this['constructor_'+args.length] !== undefined){this['constructor_'+args.length].apply(this, args);}else{throw new Error('Spike: No matching constructor found spike.core.Controller with arguments count: '+args.length);}};spike.core.Controller.prototype.constructor_0=function(){var $this=this;
-this.getSuper();
-};spike.core.Controller.prototype.constructor_1=function(model){var $this=this;
+};spike.core.GlobalElement.prototype.getSuper=function(){var $this=this; return 'spike.core.Element'; };spike.core.GlobalElement.prototype.getClass=function(){var $this=this; return 'spike.core.GlobalElement'; };});spike.core.Assembler.defineNamespace('spike.core.Controller',function(){spike.core.Controller=function(args){if(this['constructor_'+args.length] !== undefined){this['constructor_'+args.length].apply(this, args);}else{throw new Error('Spike: No matching constructor found spike.core.Controller with arguments count: '+args.length);}};spike.core.Controller.prototype.constructor_1=function(model){var $this=this;
 
 this.model = model;
 this.elementSelector = spike.core.System.getView();
 
-console.log(this);
-
 this.createTemplatePath();
 this.createTemplate();
 
-};spike.core.Controller.prototype.constructor_2=function(model,test){var $this=this;
-console.log('x');
+};spike.core.Controller.prototype.constructor_0=function(){var $this=this;};spike.core.Controller.prototype.scrollTop= true;spike.core.Controller.prototype.checkNetwork= true;spike.core.Controller.prototype.render=function(){var $this=this;
 
-console.log($this);
-
-
-};spike.core.Controller.prototype.scrollTop= true;spike.core.Controller.prototype.checkNetwork= true;spike.core.Controller.prototype.render=function(){var $this=this;
-
-this.replaceWith();
+this.rootSelector().innerHTML = this.compiledHtml;
 
 spike.core.Events.bindEvents(this);
 spike.core.Router.bindLinks(this);
 
 this.rendered = true;
-
-if(this.init !== undefined){
-this.init();
-}
 
 };spike.core.Controller.prototype.getSuper=function(){var $this=this; return 'spike.core.Element'; };spike.core.Controller.prototype.getClass=function(){var $this=this; return 'spike.core.Controller'; };});spike.core.Assembler.defineNamespace('spike.core.Modal',function(){spike.core.Modal=function(args){if(this['constructor_'+args.length] !== undefined){this['constructor_'+args.length].apply(this, args);}else{throw new Error('Spike: No matching constructor found spike.core.Modal with arguments count: '+args.length);}};spike.core.Modal.prototype.constructor_1=function(model){var $this=this;
 

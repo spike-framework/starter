@@ -21,12 +21,8 @@ class Loader extends LoaderInterface {
 
         Log.log('Load application done');
 
-        Message.add("en", "i18/en.json").then(function(){
-            Log.log('Language EN loaded');
-        });
-
         Rest.interceptor("Request", function(response, promise){
-            Log.log('invoke Request interceptor');
+            Log.log('Invoke Request interceptor');
         });
 
         Broadcaster.register('SomeEvent');
