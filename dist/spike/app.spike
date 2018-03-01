@@ -4,8 +4,9 @@ import SpikeConfig from spike.core.Config;
 
 class Config extends SpikeConfig {
 
+    languageFilePath: "i18/{lang}.json",
 
-    languageFilePath: "i18/{lang}.json"
+    html5Mode: true
 
 }package app;
 
@@ -68,30 +69,42 @@ import Log from spike.core.Log;
 
 class Home extends Controller {
 
-    model: {
-        customerName: '',
-        amount: 0,
-        type: '',
-        accountName: '',
-        phoneNumber: '',
-        comment: '',
-        depositFormBank: false,
+    Home: function () {
+        Log.log('run Home from constructor before render');
     },
 
-    Home: function () {
+    postConstruct: function(){
+                      Log.log('run Home postConstruct after render');
+            }
 
-       Log.log('Controller Home initialized');
-       console.log(this);
+}package app.element.global.navigation;
 
-       this.model.customerName = 'Mateusz';
-       this.model.amount = 8000;
-       this.model.type = 'PAYOUT';
-       this.model.accountName = 'mKonto';
-       this.model.phoneNumber = '666 334 111';
-       this.model.comment = 'Wyplata';
+import GlobalElement from spike.core.GlobalElement;
+import Log from spike.core.Log;
 
-       this.model.depositFormBank = true;
+class Navigation extends GlobalElement {
 
+    Navigation: function () {
+       Log.log('run Navigation from constructor  before render');
+    },
+
+    postConstruct: function(){
+       Log.log('run Navigation postConstruct after render');
     }
+
+}package app.element.header;
+
+import Element from spike.core.Element;
+import Log from spike.core.Log;
+
+class Header extends Element {
+
+    Header: function () {
+            Log.log('run Header from constructor  before render');
+    },
+
+     postConstruct: function(){
+                  Log.log('run Header postConstruct after render');
+        }
 
 }

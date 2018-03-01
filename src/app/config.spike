@@ -4,7 +4,8 @@ import SpikeConfig from spike.core.Config;
 
 class Config extends SpikeConfig {
 
+    languageFilePath: "i18/{lang}.json",
 
-    languageFilePath: "i18/{lang}.json"
+    html5Mode: true
 
 }

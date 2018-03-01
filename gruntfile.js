@@ -4,6 +4,8 @@ var application = {
     sass: ['./src/sass/*.scss', './src/sass/*.css', './src/app/**/*.scss', './src/app/**/**/*.scss', './src/app/**/*.css'],
 };
 
+var history = require('connect-history-api-fallback');
+
 module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-concurrent');
@@ -12,7 +14,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-sass');
-    grunt.loadNpmTasks('grunt-connect');
+    grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-shell-spawn');
 
     grunt.initConfig({
@@ -122,20 +124,34 @@ module.exports = function (grunt) {
 
         },
 
-        connect: {
-            server: {
-                port: 2111,
-                base: './dist'
+      connect: {
+        server: {
+          options: {
+            keepalive: true,
+            port: 2111,
+            open: false,
+            base: {
+              path: './dist',
+              options: {
+                index: 'index.html',
+                maxAge: 5000
+              }
+            },
+            middleware: function (connect, options, middlewares) {
+              middlewares.unshift(history());
+              return middlewares;
             }
-        },
+          }
+        }
+      },
 
         shell: {
             transpile: {
-                command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
+                command: 'java -jar F:\\transpiler\\build\\libs\\spike-transpiler.jar transpiler dist/spike/app.spike dist/js/app.js'
             //    command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
             },
             templates: {
-                command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
+                command: 'java -jar F:\\transpiler\\build\\libs\\spike-transpiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
                // command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
             }
         },
