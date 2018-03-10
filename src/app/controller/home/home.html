@@ -1,0 +1,12 @@
+import Header from app.element.header.Header;
+
+<div class="homeController">
+    homeController
+
+    <spike sp-js="var arr = ['Title1', 'Title2', 'Title3']"></spike>
+
+    <spike sp-for="index, name in arr">
+        <spike sp-element="Header" sp-params="name: name"></spike>
+    </spike>
+
+</div>
