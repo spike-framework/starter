@@ -7,7 +7,14 @@ class Events extends EventsInterface {
 
     onRender: function(){
 
-        Log.log('App onRender event');
+        Log.log('Application renders controller or modal');
+
+    },
+
+    onReady: function(){
+
+        Log.log('Application ready');
+
     }
 
 }

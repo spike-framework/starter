@@ -1,0 +1,25 @@
+package app.model;
+
+class Person {
+
+    educationYears: null,
+    age: null,
+    city: null,
+
+    Person: function(educationYears, age, city){
+        this.educationYears = educationYears;
+        this.age = age;
+        this.city = city;
+
+        this.proposedSalary = PersonUtils.calculateSalary(this);
+    }
+
+}
+
+private static class PersonUtils {
+
+    calculateSalary: function(person){
+        return person.age * person.educationYears * 50;
+    }
+
+}

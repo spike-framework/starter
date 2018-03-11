@@ -1,0 +1,19 @@
+package app.controller.home;
+
+import Controller from spike.core.Controller;
+import Log from spike.core.Log;
+import Router from spike.core.Router;
+
+import Person from app.model.Person;
+
+class Home extends Controller {
+
+    Home: function () {
+
+        var person = new Person(2, 25, 'Szczecin');
+
+        console.log(person);
+
+    }
+
+}

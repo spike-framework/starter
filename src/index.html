@@ -1,19 +1,26 @@
 <!doctype html>
-<html class="no-js" lang="">
+<html lang="en">
 <head>
+    <title>Spike Demo</title>
     <meta charset="utf-8">
+
+    <base href="/">
+
 </head>
 <body>
 
+<div class="wrapper" spike-app>
 
-<div spike-view></div>
-<div spike-modals></div>
+    <div spike-view class="container"></div>
+    <div spike-modals></div>
+
+</div>
 
 <!-- Styles -->
 <link rel="stylesheet" href="css/style.css">
 
 <!-- Spike Framework -->
-<script src="spike-framework.js" templates-src="js/templates.js" app-src="js/app.js"></script>
+<script src="spike-framework.js" templates-src="js/templates.js" watchers-src="js/watchers.js" app-src="js/app.js"></script>
 
 </body>
 </html>

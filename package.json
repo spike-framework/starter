@@ -4,22 +4,23 @@
   "version": "2.0.0",
   "main": "gruntfile.js",
   "scripts": {
-      "setup": "npm install && bower install && gem install sass"
+    "setup": "npm install && bower install && gem install sass"
   },
-   "devDependencies": {
-	"grunt": ">=1.0.1",
+  "devDependencies": {
+    "grunt": ">=1.0.1",
     "grunt-concurrent": ">=2.3.0",
-    "grunt-connect": ">=0.2.0",
     "grunt-contrib-clean": ">=1.0.0",
     "grunt-contrib-concat": ">=1.0.0",
     "grunt-contrib-copy": ">=1.0.0",
     "grunt-contrib-sass": ">=1.0.0",
     "grunt-contrib-watch": ">=1.0.0",
-    "grunt-shell-spawn": ">=0.3.10"
+    "grunt-shell-spawn": ">=0.3.10",
+    "connect-history-api-fallback": "^1.5.0",
+    "grunt-contrib-connect": "^1.0.2"
   },
   "keywords": [
-	"spike template",
-	"spike starter",
+    "spike template",
+    "spike starter",
     "spike framework",
     "spike javascript",
     "spike js",
@@ -52,5 +53,8 @@
       "url": "http://spikeframework.com/license.html"
     }
   ],
-  "homepage": "http://spikeframework.com/"
+  "homepage": "http://spikeframework.com/",
+  "dependencies": {
+
+  }
 }

@@ -5,7 +5,20 @@ import RoutingInterface from spike.core.RoutingInterface;
 class Routing extends RoutingInterface {
 
     create: function(router){
-        router.path('/', { controller: 'app.controller.home.Home' });
+
+        router.path('/', {
+            controller: 'app.controller.home.Home'
+        });
+
+        router.path('/home', {
+            controller: 'app.controller.home.Home',
+            routingParams: {
+                page: 'HOME'
+            }
+        });
+
+        router.other('/');
+
     }
 
 }

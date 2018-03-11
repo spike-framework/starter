@@ -4,6 +4,8 @@ var application = {
     sass: ['./src/sass/*.scss', './src/sass/*.css', './src/app/**/*.scss', './src/app/**/**/*.scss', './src/app/**/*.css'],
 };
 
+var history = require('connect-history-api-fallback');
+
 module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-concurrent');
@@ -12,7 +14,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-sass');
-    grunt.loadNpmTasks('grunt-connect');
+    grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-shell-spawn');
 
     grunt.initConfig({
@@ -79,10 +81,10 @@ module.exports = function (grunt) {
 
         sass: {
             dist: {
-            files: [{
-                src: ['./dist/css/style.scss'],
-                dest: './dist/css/style.css'
-            }]
+                files: [{
+                    src: ['./dist/css/style.scss'],
+                    dest: './dist/css/style.css'
+                }]
             }
         },
 
@@ -114,7 +116,7 @@ module.exports = function (grunt) {
 
             js: {
                 files: application.structure,
-                tasks: ['concat:spike',  'shell:transpile'],
+                tasks: ['concat:spike', 'shell:transpile'],
                 options: {
                     nospawn: true
                 }
@@ -124,19 +126,25 @@ module.exports = function (grunt) {
 
         connect: {
             server: {
-                port: 2111,
-                base: './dist'
+                options: {
+                    port: 2111,
+                    base: './dist',
+                    middleware: function (connect, options, middlewares) {
+                        middlewares.unshift(history());
+                        return middlewares;
+                    }
+                }
             }
         },
 
         shell: {
             transpile: {
-                command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
-            //    command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
+                //  command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
+                command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-transpiler.jar transpiler dist/spike/app.spike dist/js/app.js app'
             },
             templates: {
-                command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
-               // command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
+                // command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
+                command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-transpiler.jar templates src/app dist/js/templates.js dist/js/watchers.js new'
             }
         },
 
@@ -145,7 +153,7 @@ module.exports = function (grunt) {
                 logConcurrentOutput: true
             },
             live: {
-                tasks: ["watch:html", "watch:css", "watch:js", "watch:index", "connect:server"]
+                tasks: ["watch:html", "watch:css", "watch:js", "watch:index"]
             }
         }
 
@@ -165,6 +173,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dev', [
         'build',
+        'connect:server',
         'concurrent:live'
     ]);
 

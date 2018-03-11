@@ -1,0 +1,19 @@
+package app.model;
+
+class Developer {
+
+    status: null,
+    data: null,
+
+    Developer: function(){
+        this.status = Status.NO_CONTENT;
+    }
+
+}
+
+private enum Status {
+
+    OK: 200,
+    NO_CONTENT: 201
+
+}

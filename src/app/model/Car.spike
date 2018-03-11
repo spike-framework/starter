@@ -1,0 +1,11 @@
+package app.model;
+
+import Log from spike.core.Log;
+
+class Car {
+
+    Car: function () {
+
+    }
+
+}

@@ -1,1 +1,0 @@
-spike.core.Watchers.watchers['src_app_controller_home_home_html']=function(scope, watcher){var t='';t+='<div class="homeController" id="component1">';t+='ac3';t+='</div>'; return t;}
