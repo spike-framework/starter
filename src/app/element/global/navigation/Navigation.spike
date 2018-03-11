@@ -1,0 +1,16 @@
+package app.element.global.navigation;
+
+import GlobalElement from spike.core.GlobalElement;
+import Log from spike.core.Log;
+
+class Navigation extends GlobalElement {
+
+    Navigation: function () {
+       Log.log('run Navigation from constructor  before render');
+    },
+
+    postConstruct: function(){
+       Log.log('run Navigation postConstruct after render');
+    }
+
+}
