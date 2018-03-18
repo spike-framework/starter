@@ -1,0 +1,17 @@
+package app.model;
+
+class Employee {
+
+    name: null,
+    surname: null,
+
+    Employee: function(name, surname){
+        this.name = name;
+        this.surname = surname;
+    },
+
+    getPosition: function(){
+        return "worker";
+    }
+
+}

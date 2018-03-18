@@ -1,0 +1,17 @@
+  package app.model;
+
+import Employee from app.model.Employee;
+
+class Manager extends Employee {
+
+    bonus: 0,
+
+    Manager: function(name, surname, bonus){
+        this.bonus = bonus;
+    },
+
+    getPosition: function(){
+        return "manager";
+    }
+
+}
