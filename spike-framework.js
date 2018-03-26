@@ -418,7 +418,7 @@ if (eventFunctionBody) {
 var eventRef = element.eventsSelectors[i].id+'_'+this.allowedEvents[k];
 
 if(!this.__eventsReferences[eventRef]){
-this.__eventsReferences[eventRef] = Function('scope', 'event', eventFunctionBody).bind(null, element);
+this.__eventsReferences[eventRef] = Function('scope', 'event', eventFunctionBody).bind(element.eventsSelectors[i], element);
 element.eventsSelectors[i].addEventListener(this.allowedEvents[k], this.__eventsReferences[eventRef]);
 }
 
