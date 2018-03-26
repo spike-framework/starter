@@ -7,16 +7,17 @@
     "setup": "npm install && bower install && gem install sass"
   },
   "devDependencies": {
+    "connect-history-api-fallback": "^1.5.0",
+    "express": "^4.16.3",
     "grunt": ">=1.0.1",
     "grunt-concurrent": ">=2.3.0",
     "grunt-contrib-clean": ">=1.0.0",
     "grunt-contrib-concat": ">=1.0.0",
+    "grunt-contrib-connect": "^1.0.2",
     "grunt-contrib-copy": ">=1.0.0",
     "grunt-contrib-sass": ">=1.0.0",
     "grunt-contrib-watch": ">=1.0.0",
-    "grunt-shell-spawn": ">=0.3.10",
-    "connect-history-api-fallback": "^1.5.0",
-    "grunt-contrib-connect": "^1.0.2"
+    "grunt-shell-spawn": ">=0.3.10"
   },
   "keywords": [
     "spike template",
@@ -54,7 +55,5 @@
     }
   ],
   "homepage": "http://spikeframework.com/",
-  "dependencies": {
-
-  }
+  "dependencies": {}
 }
