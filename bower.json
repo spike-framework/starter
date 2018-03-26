@@ -9,13 +9,5 @@
     "dist",
     "node_modules",
     "bower_components"
-  ],
-  "dependencies": {
-   // "bootstrap": "<4.0.0",
-   // "jQuery": "~3.0.0",
-   // "spike-framework-core": "^2.0.0"
-  },
-  "devDependencies": {
-    //"spike-compiler": "^2.0.0"
-  }
+  ]
 }
