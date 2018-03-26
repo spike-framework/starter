@@ -26,6 +26,17 @@ module.exports = function (grunt) {
 
         copy: {
 
+            libs: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: '.',
+                        src: ['spike-framework.js'],
+                        dest: './dist/'
+                    }
+                ]
+            },
+
             index: {
                 files: [
                     {
@@ -140,11 +151,11 @@ module.exports = function (grunt) {
         shell: {
             transpile: {
                 //  command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar transpiler  dist/spike/app.spike dist/js/app.js'
-                command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-transpiler.jar transpiler dist/spike/app.spike dist/js/app.js app'
+                command: 'java -jar spike-transpiler.jar transpiler dist/spike/app.spike dist/js/app.js app'
             },
             templates: {
                 // command: 'java -jar F:\\transpiler\\build\\libs\\spike-compiler.jar templates src/app dist/js/templates.js dist/js/watchers.js'
-                command: 'java -jar D:\\xampp\\htdocs\\transpiler\\build\\libs\\spike-transpiler.jar templates src/app dist/js/templates.js dist/js/watchers.js new'
+                command: 'java -jar spike-transpiler.jar templates src/app dist/js/templates.js dist/js/watchers.js new'
             }
         },
 
@@ -159,7 +170,7 @@ module.exports = function (grunt) {
 
     });
 
-    grunt.registerTask('pre-build', ['clean:dist', 'copy:index', 'copy:images', 'copy:i18']);
+    grunt.registerTask('pre-build', ['clean:dist', 'copy:libs', 'copy:index', 'copy:images', 'copy:i18']);
 
     grunt.registerTask('build', [
         'pre-build',

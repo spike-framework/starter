@@ -10,13 +10,6 @@ class Routing extends RoutingInterface {
             controller: 'app.controller.home.Home'
         });
 
-        router.path('/home', {
-            controller: 'app.controller.home.Home',
-            routingParams: {
-                page: 'HOME'
-            }
-        });
-
         router.other('/');
 
     }

@@ -1,8 +1,0 @@
-package app.model;
-
-enum Status {
-
-    OK: 200,
-    NO_CONTENT: 201
-
-}
