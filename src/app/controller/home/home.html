@@ -1,3 +1,15 @@
 <div class="homeController">
+
+    <ul>
+
+        <li sp-for="item in scope.items">
+
+            {{ item }}
+            <button type="button" sp-click="scope.click(this)">Click</button>
+
+        </li>
+
+    </ul>
+
 </div>
 

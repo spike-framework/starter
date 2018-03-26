@@ -5,8 +5,16 @@ import Log from spike.core.Log;
 
 class Home extends Controller {
 
+    items: ['a','b','c'],
+
     Home: function () {
 
+
+    },
+
+    click: function(item){
+
+        console.log(item);
 
     }
 

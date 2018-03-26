@@ -31,13 +31,26 @@ router.get('/', function (request, response) {
     response.json(people);
 });
 
-router.put('/', function (request, response) {
+router.post('/', function (request, response) {
     request.body.id = people.length+1;
     people.push(request.body);
     response.json(request.body);
 });
 
-router.delete('/:id', function (request, response) {
+router.get('/person/:id', function (request, response) {
+
+    for(var i = 0; i < people.length; i++){
+        if(people[i].id == request.params.id){
+            response.json(people[i]);
+            break;
+        }
+    }
+
+    response.sendStatus(200);
+
+});
+
+router.delete('/person/:id', function (request, response) {
 
     for(var i = 0; i < people.length; i++){
         if(people[i].id == request.params.id){
