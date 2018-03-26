@@ -1,0 +1,25 @@
+package app.service;
+
+import Log from spike.core.Log;
+import Rest from spike.core.Rest;
+
+static class Api {
+
+    host: 'http://localhost:3000',
+
+    people: [],
+
+    getPeople: function () {
+
+        return Rest.get(this.host + '/api')
+            .then(function(response){
+                $this.people = response.people;
+                
+            });
+
+
+    }
+
+
+
+}

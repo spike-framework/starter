@@ -1,3 +1,23 @@
 <div class="homeController">
-</div>
 
+    <form sp-submit="scope.submitForm(event)">
+
+        <input type="text" name="name" placeholder="Name"/></br>
+        <input type="text" name="surname" placeholder="Surname"/></br>
+        <input type="text" name="age" placeholder="Age"/></br>
+        <button type="submit">Submit</button>
+            
+    </form>
+
+    <ul sp-watch>
+
+        <spike sp-js="var items = [1,2,3,4]"></spike>
+
+        <li sp-for="item, index in items">
+            {{ index }}, Dane: {{ item }}
+            <button type="submit" sp-click="scope.remove">Delete</button>
+        </li>
+        
+
+    </ul>
+</div>

@@ -2,12 +2,31 @@ package app.controller.home;
 
 import Controller from spike.core.Controller;
 import Log from spike.core.Log;
+import Api from app.service.Api;
 
 class Home extends Controller {
 
+    people: [],
+    
     Home: function () {
 
+        Api.getPeople()
+            .then(this.renderPeople.bind(this));
 
+        console.log('test');
+    },
+
+    renderPeople: function(response){
+        console.log(response);
+        $this.people = response.people;
+
+    },
+
+    counter: 0,
+
+    clickme: function (){
+        this.counter ++;
+        $this.selector.counter().innerHTML = this.counter;
     }
 
 }
