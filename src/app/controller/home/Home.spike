@@ -9,12 +9,18 @@ class Home extends Controller {
 
     Home: function () {
 
+    },
+
+    clickMe: function(context, event){
+
+        console.log(context);
+        console.log(event);
 
     },
 
-    click: function(item){
+    click: function(item, index, x){
 
-        console.log(item);
+        console.log(index + ' : ' + item + ' x: '+x);
 
     }
 
