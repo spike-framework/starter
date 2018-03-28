@@ -2,25 +2,20 @@ package app.controller.home;
 
 import Controller from spike.core.Controller;
 import Log from spike.core.Log;
+import MessageModal from app.modal.message.Message;
 
 class Home extends Controller {
 
-    items: ['a','b','c'],
 
     Home: function () {
 
     },
 
-    clickMe: function(context, event){
 
-        console.log(context);
-        console.log(event);
+    showModal: function(title){
 
-    },
-
-    click: function(item, index, x){
-
-        console.log(index + ' : ' + item + ' x: '+x);
+        var modal = new MessageModal(title);
+        modal.show();
 
     }
 

@@ -418,12 +418,11 @@ var eventRef = element.eventsSelectors[i].id+'_'+this.allowedEvents[k];
 
 if(!this.__eventsReferences[eventRef]){
 
-var eventFnLink = element.eventsSelectors[i].getAttribute('spike-event-' + this.allowedEvents[k]+'-link');
-eventFnLink = Events.__linkReferences[eventFnLink];
+var eventFnLinkHash = element.eventsSelectors[i].getAttribute('spike-event-' + this.allowedEvents[k]+'-link');
+eventFnLink = $this.__linkReferences[eventFnLinkHash].fn;
+eventFnLink = eventFnLink.apply.bind(eventFnLink, element.eventsSelectors[i], $this.__linkReferences[eventFnLinkHash].args);
 
-console.log(eventFnLink);
-
-this.__eventsReferences[eventRef] = null;//Function('scope', 'event', eventFunctionBody).bind(element.eventsSelectors[i], element);
+this.__eventsReferences[eventRef] = eventFnLink;
 element.eventsSelectors[i].addEventListener(this.allowedEvents[k], this.__eventsReferences[eventRef]);
 }
 
@@ -474,41 +473,31 @@ element.eventsSelectors[i].removeEventListener(this.allowedEvents[k], this.__eve
 
 };spike.core.LoaderInterface.prototype.onLoadApplication=function(){var $this=this;
 };spike.core.LoaderInterface.prototype.getSuper=function(){var $this=this; return 'null'; };spike.core.LoaderInterface.prototype.getClass=function(){var $this=this; return 'spike.core.LoaderInterface'; };});spike.core.Assembler.defineNamespace('spike.core.ModalInterface',function(){spike.core.ModalInterface=function(args){var __args = [];if(args && arguments.length == 1){    if(args instanceof Array){      if(arguments.length == 1 && arguments[0] instanceof Array) {           __args = args.length == 0 ? arguments : [args];       }else{           __args = args.length == 0 ? arguments : args;       }    }else{        __args = [args];    }}else{    __args = arguments;}this.modals= [];this.isClass= true;if(this['constructor_'+__args.length] !== undefined){this['constructor_'+__args.length].apply(this, __args);}else{throw new Error('Spike: No matching constructor found spike.core.ModalInterface with arguments count: '+__args.length);}};spike.core.ModalInterface.prototype.ModalInterface=function(){this.modals= [];this.isClass= true;if(this['constructor_'+arguments.length] !== undefined){this['constructor_'+arguments.length].apply(this, arguments);}else{throw new Error('Spike: No matching constructor found spike.core.ModalInterface with arguments count: '+arguments.length);}};spike.core.ModalInterface.prototype.constructor_0=function(){var $this=this;};spike.core.ModalInterface.prototype.modals= [];spike.core.ModalInterface.prototype.isClass= true;spike.core.ModalInterface.prototype.onRender=function(modal){var $this=this;
-this.clearDestroyedModals();
 this.modals.push(modal);
-};spike.core.ModalInterface.prototype.isRendered=function(modal){var $this=this;
-
-for(var i = 0; i < this.modals.length; i++){
-if(this.modals[i].getClass() === modal.getClass()){
-return true;
-}
-}
-
-return false;
-
 };spike.core.ModalInterface.prototype.onShow=function(modal){var $this=this;
+console.log(modal.elementId);
 modal.rootSelector().style = 'display: block;';
 };spike.core.ModalInterface.prototype.onHide=function(modal){var $this=this;
 modal.rootSelector().style = 'display: hide;';
+};spike.core.ModalInterface.prototype.onConstruct=function(modalElement){var $this=this;
+return modalElement;
 };spike.core.ModalInterface.prototype.onDestroy=function(modal){var $this=this;
-modal.rootSelector().style = 'display: none;';
-modal.destroy();
-};spike.core.ModalInterface.prototype.invalidateAll=function(){var $this=this;
 
 for(var i = 0; i < this.modals.length; i++){
-this.onDestroy(this.modals[i]);
+
+if(this.modals[i].elementId === modal.elementId){
+this.modals.splice(i, 1);
 }
 
-};spike.core.ModalInterface.prototype.clearDestroyedModals=function(){var $this=this;
+}
 
-var modals = [];
+};spike.core.ModalInterface.prototype.removeAll=function(){var $this=this;
+
 for(var i = 0; i < this.modals.length; i++){
-if(this.modals[i].destroyed === false){
-modals.push(this.modals[i]);
-}
+this.modals[i].destroy();
 }
 
-this.modals = modals;
+this.modals = [];
 
 };spike.core.ModalInterface.prototype.getSuper=function(){var $this=this; return 'null'; };spike.core.ModalInterface.prototype.getClass=function(){var $this=this; return 'spike.core.ModalInterface'; };});spike.core.Assembler.createStaticClass('spike.core','spike.core.System', 'null',function(){ return {config: null,eventsInterface: null,modalInterface: null,routing: null,idCounter: 1,attributes: {
 APP: 'spike-app',
@@ -569,7 +558,7 @@ if (controller.scrollTop === true) {
 window.scrollTo(0,0);
 }
 
-this.modalInterface.invalidateAll();
+this.modalInterface.removeAll();
 
 
 spike.core.Selectors.clearSelectorsCache();
@@ -663,7 +652,7 @@ spike.core.Log.log('Destroy assembler');
 spike.core.Assembler.destroy();
 
 spike.core.Log.warn('Spike version: {0}', [spike.core.System.version]);
-spike.core.Log.ok('Spike application initializing...');
+spike.core.Log.ok('Spike application initializing.');
 
 this.verifyViews();
 spike.core.Router.detectHTML5Mode();
@@ -682,7 +671,7 @@ $this.initGlobalElements();
 
 $this.loader.onLoadApplication();
 
-spike.core.Log.ok('Spike application ready to work...');
+spike.core.Log.ok('Spike application ready to work.');
 
 });
 
@@ -895,11 +884,11 @@ return selector;
 
 for(var i = 0; i < elementsWithId.length; i++){
 
-if(elementsWithId[i].getAttribute('sp-keep-id') != null){
+if(elementsWithId[i].getAttribute('sp-keep-id') != null || elementsWithId[i].id.indexOf('-sp-') > -1){
 continue;
 }
 
-var newId = elementsWithId[i].id + '-' + spike.core.Util.hash();
+var newId = elementsWithId[i].id + '-sp-' + spike.core.Util.hash();
 
 selectors[elementsWithId[i].id] = getSelectorFn(newId);
 
@@ -2441,8 +2430,17 @@ this[prop] = params[prop];
 
 };spike.core.Element.prototype.include=function(childElement){var $this=this;
 
+childElement.extractElementId();
+
 this.childElements.push(childElement);
 return childElement.compiledHtml;
+
+};spike.core.Element.prototype.extractElementId=function(){var $this=this;
+
+var virtualElement = document.createElement('div');
+virtualElement.innerHTML = this.compiledHtml;
+
+this.elementId = virtualElement.firstChild.id;
 
 };spike.core.Element.prototype.createTemplatePath=function(){var $this=this;
 
@@ -2571,24 +2569,48 @@ this.postConstruct();
 };spike.core.Controller.prototype.destroy=function(){var $this=this;
 this.super().destroy();
 spike.core.Watchers.unobservable(this);
-
-};spike.core.Controller.prototype.getSuper=function(){var $this=this; return 'spike.core.Element'; };spike.core.Controller.prototype.getClass=function(){var $this=this; return 'spike.core.Controller'; };});spike.core.Assembler.defineNamespace('spike.core.Modal',function(){spike.core.Modal=function(args){var __args = [];if(args && arguments.length == 1){    if(args instanceof Array){      if(arguments.length == 1 && arguments[0] instanceof Array) {           __args = args.length == 0 ? arguments : [args];       }else{           __args = args.length == 0 ? arguments : args;       }    }else{        __args = [args];    }}else{    __args = arguments;}this.destroyed= false;this.isClass= true;if(this['constructor_'+__args.length] !== undefined){this['constructor_'+__args.length].apply(this, __args);}else{throw new Error('Spike: No matching constructor found spike.core.Modal with arguments count: '+__args.length);}};spike.core.Modal.prototype.Modal=function(){this.destroyed= false;this.isClass= true;if(this['constructor_'+arguments.length] !== undefined){this['constructor_'+arguments.length].apply(this, arguments);}else{throw new Error('Spike: No matching constructor found spike.core.Modal with arguments count: '+arguments.length);}};spike.core.Modal.prototype.constructor_1=function(model){var $this=this;
-
-this.parentElement = spike.core.System.getModalsView();
-this.model = model;
+};spike.core.Controller.prototype.getSuper=function(){var $this=this; return 'spike.core.Element'; };spike.core.Controller.prototype.getClass=function(){var $this=this; return 'spike.core.Controller'; };});spike.core.Assembler.defineNamespace('spike.core.Modal',function(){spike.core.Modal=function(args){var __args = [];if(args && arguments.length == 1){    if(args instanceof Array){      if(arguments.length == 1 && arguments[0] instanceof Array) {           __args = args.length == 0 ? arguments : [args];       }else{           __args = args.length == 0 ? arguments : args;       }    }else{        __args = [args];    }}else{    __args = arguments;}this.visible= false;this.isClass= true;if(this['constructor_'+__args.length] !== undefined){this['constructor_'+__args.length].apply(this, __args);}else{throw new Error('Spike: No matching constructor found spike.core.Modal with arguments count: '+__args.length);}};spike.core.Modal.prototype.Modal=function(){this.visible= false;this.isClass= true;if(this['constructor_'+arguments.length] !== undefined){this['constructor_'+arguments.length].apply(this, arguments);}else{throw new Error('Spike: No matching constructor found spike.core.Modal with arguments count: '+arguments.length);}};spike.core.Modal.prototype.constructor_0=function(){var $this=this;
 
 this.createTemplatePath();
 this.createTemplate();
+this.render();
 
+};spike.core.Modal.prototype.visible= false;spike.core.Modal.prototype.isClass= true;spike.core.Modal.prototype.render=function(){var $this=this;
 
+this.parentElement = spike.core.System.getModalsView();
+this.elementId = 'modal-'+spike.core.Util.hash();
 
-};spike.core.Modal.prototype.constructor_0=function(){var $this=this;};spike.core.Modal.prototype.destroyed= false;spike.core.Modal.prototype.isClass= true;spike.core.Modal.prototype.show=function(){var $this=this;
-spike.core.System.modalInterface.onShow();
+console.log(this.parentElement);
+
+var modalElement = document.createElement('div');
+modalElement.id = this.elementId;
+modalElement = spike.core.System.modalInterface.onConstruct(modalElement);
+
+this.parentElement.appendChild(modalElement);
+this.rootSelector().innerHTML = this.compiledHtml;
+
+spike.core.Events.bindEvents(this);
+spike.core.Router.bindLinks(this);
+spike.core.Watchers.observe(this);
+
+spike.core.System.modalInterface.onRender(this);
+this.rendered = true;
+
+this.postConstructChildren();
+this.postConstruct();
+
+};spike.core.Modal.prototype.show=function(){var $this=this;
+this.visible = true;
+spike.core.System.modalInterface.onShow(this);
 };spike.core.Modal.prototype.hide=function(){var $this=this;
-spike.core.System.modalInterface.onHide();
+this.visible = false;
+spike.core.System.modalInterface.onHide(this);
 };spike.core.Modal.prototype.destroy=function(){var $this=this;
+spike.core.System.modalInterface.onDestroy(this);
+this.visible = false;
 this.super().destroy();
-this.destroyed = true;
+spike.core.Watchers.unobservable(this);
+this.rootSelector().remove();
 };spike.core.Modal.prototype.getSuper=function(){var $this=this; return 'spike.core.Element'; };spike.core.Modal.prototype.getClass=function(){var $this=this; return 'spike.core.Modal'; };});spike.core.Assembler.createStaticClass('spike.core','Broadcaster', 'null',function(){ return {applicationEvents: {},isClass: true,register: function (eventName) {var $this=this;
 
 if (!spike.core.Util.isNull(this.applicationEvents[eventName])) {
