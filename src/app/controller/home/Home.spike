@@ -21,12 +21,4 @@ class Home extends Controller {
         $this.people = response.people;
 
     },
-
-    counter: 0,
-
-    clickme: function (){
-        this.counter ++;
-        $this.selector.counter().innerHTML = this.counter;
-    }
-
-}
+};

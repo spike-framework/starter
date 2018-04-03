@@ -1,23 +1,191 @@
-<div class="homeController">
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>REST</title>
+        <link rel="stylesheet" href="D:/xampp/htdocs/starter/dist/css/style.css" type='text/css'/>
+    </head>
+    <body>
 
-    <form sp-submit="scope.submitForm(event)">
+        <h1>Ćwiczenia REST</h1>
 
-        <input type="text" name="name" placeholder="Name"/></br>
-        <input type="text" name="surname" placeholder="Surname"/></br>
-        <input type="text" name="age" placeholder="Age"/></br>
-        <button type="submit">Submit</button>
+        <div id="content">
+            <div id="form">
+                <form>
+                    <input type="text"  id="inputId" name="id" placeholder="id"/>
+                    <input type="text"  id="inputName" name="firstName" placeholder="Imie"/>
+                    <input type="text"  id="inputSurname" name="lastName" placeholder="Nazwisko"/>
+                    <input type="text"  id="inputAge" name="age" placeholder="Wiek"/>
+                </form>
+            </div>
+
+            <button type="submmit" id="btnAdd">Dodaj nową osobę</button>
+            <button type="submmit" id="btnShowPerson">Wyświetl osobę</button>
+            <button type="submmit" id="btnDelete">Usuń osobę</button>
+            <button type="submmit" id="btnShow">Wyświetl całą dostępną bazę</button>
             
-    </form>
+            <div id="result">
+                Tutaj będą wyświetlane rezultaty
+            </div>
+            
+            <!-- <div id="footer">Api stworzone na potrzeby ćwiczenia.</div> -->
+        </div>
 
-    <ul sp-watch>
 
-        <spike sp-js="var items = [1,2,3,4]"></spike>
 
-        <li sp-for="item, index in items">
-            {{ index }}, Dane: {{ item }}
-            <button type="submit" sp-click="scope.remove">Delete</button>
-        </li>
-        
 
-    </ul>
-</div>
+        <script>
+            //deklaracja przycisków
+            var btnAdd = document.getElementById('btnAdd');
+            var btnShowPerson = document.getElementById('btnShowPerson');
+            var btnDelete = document.getElementById('btnDelete');
+            var btnShowAll = document.getElementById('btnShow');
+
+            var result = document.getElementById('result');
+            var inputId = document.getElementById('inputId');
+            var inputName = document.getElementById('inputName');
+            var inputSurname = document.getElementById('inputSurname');
+            var inputAge = document.getElementById('inputAge');
+            var url = "http://localhost:3000/api/";
+
+            var makeHTML = function(successMessage){
+                    var obj = JSON.parse(successMessage);
+                    result.innerHTML = "";
+                        for(var i = 0; i < successMessage.length; i++){
+                            result.innerHTML += '<table><tr><td id="firstTd">' + obj[i].id + '</td><td>' + obj[i].name + '</td><td>' + obj[i].surname + '</td><td>' + obj[i].age + '</td></tr></table>';
+                        }
+            };
+          
+
+            var showAll = function(){
+                var shoowAllPromise = new Promise(function(resolve){
+                    var requestShowAll = new XMLHttpRequest();
+                    requestShowAll.open('GET', url, true);
+                    requestShowAll.onload = function() {
+                        resolve(requestShowAll.responseText)
+                    };
+                    requestShowAll.send();
+                })
+
+                shoowAllPromise.then(makeHTML)
+            };
+
+             var showPersonId = function(){
+                var shoowPersonPromise = new Promise(function(resolve){
+                    var requestShowPerson = new XMLHttpRequest();
+                    requestShowPerson.open('GET', url + 'person/' + inputId.value, true);
+                    requestShowPerson.onload = function() {
+                        resolve(requestShowPerson.responseText)
+                    };
+                    requestShowPerson.send();
+                })
+
+                shoowPersonPromise.then(makeHTML)
+            };
+
+            var showPersonName = function(){
+                var shoowPersonPromise = new Promise(function(resolve){
+                    var requestShowPerson = new XMLHttpRequest();
+                    requestShowPerson.open('GET', url + 'person/name/' + inputName.value, true);
+                    requestShowPerson.onload = function() {
+                        resolve(requestShowPerson.responseText)
+                    };
+                    requestShowPerson.send();
+                })
+
+                shoowPersonPromise.then(makeHTML)
+            };
+
+            var showPersonSurname = function(){
+                var shoowPersonPromise = new Promise(function(resolve){
+                    var requestShowPerson = new XMLHttpRequest();
+                    requestShowPerson.open('GET', url + 'person/surname/' + inputSurname.value, true);
+                    requestShowPerson.onload = function() {
+                        resolve(requestShowPerson.responseText)
+                    };
+                    requestShowPerson.send();
+                })
+
+                shoowPersonPromise.then(makeHTML)
+            };
+
+            var showPersonAge = function(){
+                var shoowPersonPromise = new Promise(function(resolve){
+                    var requestShowPerson = new XMLHttpRequest();
+                    requestShowPerson.open('GET', url + 'person/age/' + inputAge.value, true);
+                    requestShowPerson.onload = function() {
+                        resolve(requestShowPerson.responseText)
+                    };
+                    requestShowPerson.send();
+                })
+
+                shoowPersonPromise.then(makeHTML)
+            };
+
+            var deletePerson = function(){
+                var deletePersonPromise = new Promise(function(resolve){
+                    var deletePersonPromise = new XMLHttpRequest();
+                    deletePersonPromise.open('DELETE', url + 'person/' + inputId.value, true);
+                    deletePersonPromise.onload = function() {
+                        resolve(deletePersonPromise.responseText)
+                    };
+                    deletePersonPromise.send();
+                })
+
+                deletePersonPromise.then(showAll);
+            };
+
+            var AddPerson = function(){
+                var AddPersonPromise = new Promise(function(resolve){
+                    var requestAddPerson = new XMLHttpRequest();
+                    requestAddPerson.open('POST', url + inputName.value + '/' + inputSurname.value + '/' + inputAge.value , true);
+                    requestAddPerson.onload = function() {
+                        resolve(requestAddPerson.responseText)
+                    };
+
+                    requestAddPerson.send();
+                })
+
+                AddPersonPromise.then(showAll);
+            };
+
+
+            //Ustawienie Eventów
+            btnAdd.addEventListener("click", function(){
+                if(inputName.value.length != 0 & inputSurname.value.length != 0  & inputAge.value.length != 0){
+                    AddPerson();
+                }else{
+                    window.alert("Podaj wszystkie danie");
+                }
+            });
+            btnShowPerson.addEventListener("click", function(){
+                if(inputId.value.length != 0){
+                    showPersonId();
+                }
+                else if(inputName.value.length != 0){
+                    showPersonName();
+                }
+                else if(inputSurname.value.length > 0){
+                    showPersonSurname();
+                }
+                else if(inputAge.value.length > 0){
+                    showPersonAge();
+                }
+                else{
+                    window.alert("Podaj jakieś dane!");
+                }
+            });
+            btnDelete.addEventListener("click", function(){
+                if(inputId.value.length != 0){
+                    deletePerson();
+                }else{
+                    showAll();
+                    window.alert("Podaj id osoby którą chcesz usunąć!");
+                }
+            });
+
+            btnShowAll.addEventListener("click", showAll);
+
+        </script>
+
+    </body>
+</html>

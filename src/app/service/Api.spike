@@ -16,10 +16,5 @@ static class Api {
                 $this.people = response.people;
                 
             });
-
-
-    }
-
-
-
+    },
 }
