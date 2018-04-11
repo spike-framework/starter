@@ -1,0 +1,14 @@
+package app.controller.testElements;
+
+import Controller from spike.core.Controller;
+import Log from spike.core.Log;
+
+class TestElements extends Controller {
+
+    data: [1,2,3],
+
+    TestElements: function () {
+
+    }
+
+}

@@ -1,0 +1,39 @@
+<div class="testBindingController">
+
+    <div class="row">
+
+        <input type="text" sp-bind="scope.name"/>
+        <textarea sp-bind="scope.desc"></textarea>
+        <select sp-bind="scope.age">
+            <option sp-for="age in scope.ageList" value="{{age}}">{{age}}</option>
+        </select>
+
+    </div>
+
+    <div class="row">
+        <div sp-foreach="objectType in scope.objectList">
+            <input type="text" sp-bind="objectType.type"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <form sp-bind="scope.formData">
+            <input type="text" name="name"/>
+            <input type="text" name="surname"/>
+
+            <input type="radio" name="gender" value="male" checked> Male<br>
+            <input type="radio" name="gender" value="female"> Female<br>
+
+        </form>
+    </div>
+
+    <div class="row">
+        <input type="radio" name="type" value="spike" sp-bind="scope.framework" checked> Spike<br>
+        <input type="radio" name="type" value="angular" sp-bind="scope.framework"> Angular<br>
+    </div>
+
+    <div class="row">
+        <input type="checkbox" name="accept" sp-bind="scope.accept"> accept<br>
+    </div>
+
+</div>

@@ -6,8 +6,20 @@ class Routing extends RoutingInterface {
 
     create: function(router){
 
-        router.path('/', {
-            controller: 'app.controller.home.Home'
+        router.path('/binding', {
+            controller: 'app.controller.testBinding.TestBinding'
+        });
+
+        router.path('/elements', {
+            controller: 'app.controller.testElements.TestElements'
+        });
+
+        router.path('/super', {
+            controller: 'app.controller.testSuper.TestSuper'
+        });
+
+        router.path('/templates', {
+            controller: 'app.controller.testTemplates.TestTemplates'
         });
 
         router.other('/');

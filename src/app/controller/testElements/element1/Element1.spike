@@ -1,0 +1,12 @@
+package app.controller.testElements.element1;
+
+import Element from spike.core.Element;
+import Log from spike.core.Log;
+
+class Element1 extends Element {
+
+    Element1: function () {
+
+    }
+
+}

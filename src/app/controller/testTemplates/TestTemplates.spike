@@ -1,0 +1,25 @@
+package app.controller.testTemplates;
+
+import Controller from spike.core.Controller;
+import Log from spike.core.Log;
+
+class TestTemplates extends Controller {
+
+    type: 3,
+
+    data: [1,2,3],
+
+    TestTemplates: function () {
+
+    },
+
+    postConstruct: function(){
+
+        $this.trigger('trigger1');
+        $this.trigger('trigger2', {
+            additionalData: $this.data
+        });
+
+    }
+
+}

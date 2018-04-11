@@ -1,0 +1,14 @@
+<div class="templateTest1">
+    <h5>templateTest1</h5>
+
+    <spike sp-if="scope.data">
+        <h5>has data</h5>
+    </spike>
+    <spike sp-if="scope.additionalData">
+        <h5>has additionalData</h5>
+
+        <spike sp-template="app.controller.testTemplates.templateTest2"></spike>
+
+    </spike>
+
+</div>

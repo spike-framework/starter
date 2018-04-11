@@ -1,0 +1,17 @@
+package app.controller.testElements.element2;
+
+import Element from spike.core.Element;
+import Log from spike.core.Log;
+
+class Element2 extends Element {
+
+    Element2: function () {
+    },
+
+    postConstruct: function(){
+
+        console.log(this);
+
+    }
+
+}

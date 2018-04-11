@@ -1,0 +1,42 @@
+package app.controller.testBinding;
+
+import Controller from spike.core.Controller;
+import Log from spike.core.Log;
+
+class TestBinding extends Controller {
+
+    name: '',
+
+    age: null,
+    ageList: [10,20,30,40],
+
+    objectType: null,
+    objectList: [
+        { type: '' },
+        { type: '' }
+    ],
+
+    desc: '',
+    formData: {},
+    framework: '',
+    accept: null,
+
+    TestBinding: function () {
+
+        setInterval(function(){
+
+            Log.log('name value: '+$this.name);
+            Log.log('age value: '+$this.age);
+            Log.log('desc value: '+$this.desc);
+            Log.log('accept value: '+$this.accept);
+            Log.log('objectType filled values: {0}', [$this.objectList]);
+
+            Log.log('framework value: '+$this.framework);
+            Log.log('formData filled values: {0}', [$this.formData]);
+            console.log($this.formData);
+
+        }, 2000);
+
+    }
+
+}

@@ -1,0 +1,12 @@
+package app.controller.testSuper;
+
+import Controller from spike.core.Controller;
+import Log from spike.core.Log;
+
+class TestSuper extends Controller {
+
+    TestSuper: function () {
+
+    }
+
+}
