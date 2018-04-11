@@ -26,6 +26,17 @@ module.exports = function (grunt) {
 
         copy: {
 
+            spike: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: './src',
+                        src: ['spike-framework.js'],
+                        dest: './dist/'
+                    }
+                ]
+            },
+
             libs: {
                 files: [
                     {
@@ -101,6 +112,14 @@ module.exports = function (grunt) {
 
         watch: {
 
+            spike: {
+                files: './src/spike-framework.js',
+                tasks: ['copy:spike'],
+                options: {
+                    nospawn: true
+                }
+            },
+
             index: {
                 files: './src/index.html',
                 tasks: ['copy:index'],
@@ -164,13 +183,13 @@ module.exports = function (grunt) {
                 logConcurrentOutput: true
             },
             live: {
-                tasks: ["watch:html", "watch:css", "watch:js", "watch:index"]
+                tasks: ["watch:html", "watch:css", "watch:js", "watch:index", "watch:spike"]
             }
         }
 
     });
 
-    grunt.registerTask('pre-build', ['clean:dist', 'copy:libs', 'copy:index', 'copy:images', 'copy:i18']);
+    grunt.registerTask('pre-build', ['clean:dist', 'copy:libs', 'copy:index', 'copy:images', 'copy:i18', 'copy:spike']);
 
     grunt.registerTask('build', [
         'pre-build',
