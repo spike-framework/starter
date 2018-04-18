@@ -6,6 +6,10 @@ class Routing extends RoutingInterface {
 
     create: function(router){
 
+        router.path('/', {
+            controller: 'app.controller.testBinding.TestBinding'
+        });
+
         router.path('/binding', {
             controller: 'app.controller.testBinding.TestBinding'
         });

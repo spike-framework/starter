@@ -13,6 +13,10 @@ class TestTemplates extends Controller {
 
     },
 
+    setData: function(){
+        $this.data = 'new';
+    },
+
     postConstruct: function(){
 
         $this.trigger('trigger1');

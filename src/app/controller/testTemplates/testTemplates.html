@@ -3,12 +3,14 @@
     <spike sp-template="app.controller.testTemplates.templateTest1" sp-if="scope.type === 1 || scope.type === 3"></spike>
     <spike sp-template="app.controller.testTemplates.templateTest2" sp-if="scope.type === 2 || scope.type === 3"></spike>
 
+    <div sp-watch>
+        <spike sp-template="app.controller.testTemplates.templateTest1" sp-params="{ data: scope.data }"></spike>
+    </div>
 
-    <spike sp-template="app.controller.testTemplates.templateTest1" sp-params="{ data: scope.data }"></spike>
+    <button type="button" sp-click="scope.setData()">sadasd</button>
 
     <spike sp-template="app.controller.testTemplates.templateTest1" sp-trigger="trigger1"></spike>
     <spike sp-template="app.controller.testTemplates.templateTest1" sp-trigger="trigger2"></spike>
-
 
     <spike sp-for="var i = 0; i < 10; i++">
         <spike sp-template="app.controller.testTemplates.templateTest2" sp-params="{ index: i }"></spike>
